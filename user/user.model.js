@@ -1,5 +1,5 @@
-const { DataTypes } = require("sequelize")
-const sequelize = require("../connect")
+import { DataTypes, Model } from 'sequelize'
+import sequelize from '../connect.js'
 
 class User extends Model {} 
 

@@ -1,23 +1,15 @@
-const express = require('express')
-require('./connect')
+import express from 'express';
+import cors from 'cors'
 
-const userRouter = require('./user/user')
+import UserRouter from './user/user.js'
 
-const bodyParser = require('body-parser')
-const jwt = require('jsonwebtoken') 
-const cors = require('cors') 
+const app = express()
 
-const app = express() 
+app.use(cors({ origin: '*' }))
+app.use(express.json()); // Para procesar JSON en el cuerpo de la solicitud
+app.use(express.urlencoded({ extended: true }));
 
-//para realizar peticiones desde cualquier url (* significa todos) se puede restringir
-app.use(cors({
-  origin: '*'
-}))
-
-app.use(bodyParser.json()) //Parámetros a recibir son tipo Json
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(userRouter)
+app.use(UserRouter)
 
 //Puerto del servidor
 app.listen(3000, () => {

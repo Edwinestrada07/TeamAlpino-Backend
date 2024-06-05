@@ -1,8 +1,7 @@
-const {Sequelize} = require('sequelize')
+import Sequelize from 'sequelize'
 
 //driver://user:password@host:port/database
 const sequelize = new Sequelize('postgres://postgres:12345@localhost:5432/TeamAlpino') //Conexión a la base de datos por medio de sequelize
-
 
 sequelize
   .authenticate()
@@ -13,4 +12,4 @@ sequelize
     console.error('Error al conectar a la base de datos:', error)
 })
 
-module.exports = sequelize
+export default sequelize
