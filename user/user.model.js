@@ -10,14 +10,17 @@ User.init (
         },
         cell_number: {
             type: DataTypes.STRING,
-        }
-    },
-    {
+        },
+        status: {
+            type: DataTypes.ENUM([ 'ACTIVE', 'INACTIVE', 'DELETE',  ]),
+            defaultValue: 'ACTIVE'
+        },
+    }, {
         sequelize,
         modelName: 'User',
     }
 )
 
-User.sync({alter:true})
+User.sync({ alter:true })
 
 export default User
