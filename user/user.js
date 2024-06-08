@@ -51,11 +51,12 @@ app.get('/user/:name', async (req, res) => {
 });
 
 app.post('/user', async (req, res) => {
+    const { name, cell_number } = req.body
     try {
-        const newUser = await User.create(req.body)
+        const newUser = await User.create({ name, cell_number })
         res.status(201).json({ status: 'success', user: newUser })
     } catch (error) {
-        console.error(error);
+        console.error(error)
         res.status(500).json({ message: 'Hubo un error al crear el usuario' })
     }
 })
