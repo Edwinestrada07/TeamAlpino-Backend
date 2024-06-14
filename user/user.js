@@ -25,13 +25,13 @@ app.get('/user', async (req, res) => {
     }
 })
 
-app.get('/user/:name', async (req, res) => {
+app.get('/user/:id', async (req, res) => {
     try {
-        const { name } = req.params // Usamos req.params para obtener el nombre del parámetro de ruta
+        const { id } = req.params // Usamos req.params para obtener el nombre del parámetro de ruta
 
         const user = await User.findOne({
             where: {
-                name: { [Op.iLike]: `%${name}%` } // Busca por nombre ignorando mayúsculas/minúsculas
+                name: { [Op.iLike]: `%${id}%` } // Busca por nombre ignorando mayúsculas/minúsculas
             },
         }) //Obtenemos del usuario en la base de datos, utilizando método de sequelize
 
@@ -40,7 +40,7 @@ app.get('/user/:name', async (req, res) => {
         }
 
         if (user.status === 'INACTIVE') {
-            return res.status(200).json({ status: "INACTIVE", message: `Usuario ${name} está inactivo` })
+            return res.status(200).json({ status: "INACTIVE", message: `Usuario ${id} está inactivo` })
         }
 
         res.json(user)
@@ -78,25 +78,15 @@ app.put('/user/:id', async (req, res) => {
     }
 })
 
-app.delete('/user/:name', async (req, res) => {
-    try {
-        const { name } = req.params // Usamos req.params para obtener el nombre del parámetro de ruta
+app.delete('/user/:id', async (req, res) => {
+    await User.destroy({
+        where: {
+            id: req.params.id
+        },
+        individualHooks: true// Asegura que los ganchos de Sequelize se ejecuten correctamente
+    })
 
-        const deleteCount = await User.destroy({
-            where: {
-                name: { [Op.iLike]: `%${name}%` }
-            },
-        })
-
-        if (deleteCount === 0) {
-            return res.status(404).json({ message: 'Usuario no encontrado' })
-        }
-
-        res.json({ status: 'success', message: `Usuario ${name} eliminado` })
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Hubo un error al eliminar el usuario' })
-    }
+    res.send({ status: "success"})
 })
 
 export default app
