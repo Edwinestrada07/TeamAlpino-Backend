@@ -11,6 +11,10 @@ User.init (
         cell_number: {
             type: DataTypes.STRING,
         },
+        is_archer: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
         status: {
             type: DataTypes.ENUM([ 'ACTIVE', 'INACTIVE', 'DELETE',  ]),
             defaultValue: 'ACTIVE'
@@ -21,6 +25,6 @@ User.init (
     }
 )
 
-User.sync({alter:true})
+User.sync({ alter:true })
 
 export default User

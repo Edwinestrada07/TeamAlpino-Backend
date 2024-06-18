@@ -51,10 +51,18 @@ app.get('/user/:id', async (req, res) => {
 });
 
 app.post('/user', async (req, res) => {
-    const { name, cell_number } = req.body
+    const { name, cell_number, is_archer, status } = req.body
+
+    if(is_archer) {
+        const archerCount = await User.count({ where: { is_archer: true } })
+        if(archerCount >= 2) {
+            return res.status(400).json({ error: 'Ya hay dos arqueros registrados.' })
+        }
+    }
+
     try {
-        const newUser = await User.create({ name, cell_number })
-        res.status(201).json({ status: 'success', user: newUser })
+        const newUser = await User.create({ name, cell_number, is_archer, status })
+        res.status(201).json({ status: 'Guardado con Éxito', user: newUser })
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: 'Hubo un error al crear el usuario' })
@@ -62,20 +70,24 @@ app.post('/user', async (req, res) => {
 })
 
 app.put('/user/:id', async (req, res) => {
-    try {
-        const { id } = req.params
-        const [updated] = await User.update(req.body, { where: { id } })
+    const { id } = req.params
+    const { name, cell_number, is_archer, status } = req.body
 
-        if (!updated) {
-            return res.status(404).json({ message: 'Usuario no encontrado' })
+    const currentUser = await User.findByPk(id)
+
+    if (is_archer && !currentUser.is_archer) {
+        const archerCount = await User.count({ where: { is_archer: true } })
+        if (archerCount >= 2) {
+            return res.status(400).json({ error: 'Ya hay dos arqueros registrados.' })
         }
-
-        const updatedUser = await User.findOne({ where: { id } })
-        res.json({ status: 'success', user: updatedUser })
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Hubo un error al actualizar el usuario' })
     }
+
+    await User.update({ name, cell_number, is_archer, status }, {
+        where: { id }
+    });
+
+    const updatedUser = await User.findByPk(id)
+    res.json(updatedUser);
 })
 
 app.delete('/user/:id', async (req, res) => {
