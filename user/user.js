@@ -48,10 +48,15 @@ app.get('/user/:id', async (req, res) => {
         console.error(error)
         res.status(500).json({ message: 'Hubo un error al obtener la información del usuario' })
     }
-});
+})
 
 app.post('/user', async (req, res) => {
     const { name, cell_number, is_archer, status } = req.body
+
+    const totalCount = await User.count()
+    if(totalCount >= 14) {
+        return res.status(400).json({ error: 'Ya se ha excedido el número de jugadores.' })
+    }
 
     if(is_archer) {
         const archerCount = await User.count({ where: { is_archer: true } })
@@ -84,10 +89,10 @@ app.put('/user/:id', async (req, res) => {
 
     await User.update({ name, cell_number, is_archer, status }, {
         where: { id }
-    });
+    })
 
     const updatedUser = await User.findByPk(id)
-    res.json(updatedUser);
+    res.json(updatedUser)
 })
 
 app.delete('/user/:id', async (req, res) => {
