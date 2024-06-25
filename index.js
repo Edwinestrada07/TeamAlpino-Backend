@@ -13,5 +13,5 @@ app.use(UserRouter)
 
 //Puerto del servidor
 app.listen(3000, () => {
-  console.log(`Example app listening on port ${3000}`)
+  console.log(`Aplicación conectada en el puerto ${3000}`)
 })
