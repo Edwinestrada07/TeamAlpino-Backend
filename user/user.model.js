@@ -15,9 +15,12 @@ User.init (
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
-        status: {
-            type: DataTypes.ENUM([ 'ACTIVE', 'INACTIVE', 'DELETE',  ]),
-            defaultValue: 'ACTIVE'
+        rating: {
+            type: DataTypes.INTEGER, 
+            validate: {
+                min: 1, // Mínimo valor de calificación
+                max: 5, // Máximo valor de calificación
+            },
         },
     }, {
         sequelize,

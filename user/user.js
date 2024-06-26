@@ -7,13 +7,14 @@ const app = express.Router()
 app.get('/user', async (req, res) => {
     try {
         const { name } = req.query // Extraemos el parámetro name de los parámetros de consulta de la solicitud
-        const conditions = { status: 'ACTIVE' } // Define las condiciones con el estado activo
+        const conditions = { } // Define las condiciones con el estado activo
 
         if (name) {
             conditions.name = { [Op.iLike]: `%${name}%` }
         } // Busca por nombre si se proporciona mayus/minus
 
         const users = await User.findAll({ 
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
             where: conditions 
         }) // Utilizamos el método findAll del modelo User para obtener todos los usuarios que cumplan con las condiciones especificadas
 
@@ -51,7 +52,7 @@ app.get('/user/:id', async (req, res) => {
 })
 
 app.post('/user', async (req, res) => {
-    const { name, cell_number, is_archer, status } = req.body
+    const { name, cell_number, is_archer, rating } = req.body
 
     const totalCount = await User.count()
     if(totalCount >= 14) {
@@ -66,7 +67,7 @@ app.post('/user', async (req, res) => {
     }
 
     try {
-        const newUser = await User.create({ name, cell_number, is_archer, status })
+        const newUser = await User.create({ name, cell_number, is_archer, rating })
         res.status(201).json({ status: 'Guardado con Éxito', user: newUser })
     } catch (error) {
         console.error(error)
@@ -76,7 +77,7 @@ app.post('/user', async (req, res) => {
 
 app.put('/user/:id', async (req, res) => {
     const { id } = req.params
-    const { name, cell_number, is_archer, status } = req.body
+    const { name, cell_number, is_archer, rating } = req.body
 
     const currentUser = await User.findByPk(id)
 
@@ -87,7 +88,7 @@ app.put('/user/:id', async (req, res) => {
         }
     }
 
-    await User.update({ name, cell_number, is_archer, status }, {
+    await User.update({ name, cell_number, is_archer, rating }, {
         where: { id }
     })
 
@@ -104,6 +105,34 @@ app.delete('/user/:id', async (req, res) => {
     })
 
     res.send({ status: "success"})
+})
+
+// Ruta para actualizar la calificación de un jugador por su ID
+app.put('/user/:id/rating', async (req, res) => {
+    try {
+        const { id } = req.params // Obtiene el ID del usuario de los parámetros de ruta
+        const { rating } = req.body // Obtiene el nuevo rating del cuerpo de la solicitud
+
+        // Busca y actualiza el usuario en la base de datos
+        const updatedUser = await User.update(
+            { rating },
+            { 
+                where: { id },
+                returning: true, // Devuelve el usuario actualizado
+                plain: true // Devuelve solo los datos actualizados
+            }
+        );
+
+        if (!updatedUser[1]) {
+            return res.status(404).json({ message: 'Usuario no encontrado' })
+        }
+
+        res.json(updatedUser[1]) // Devuelve el usuario actualizado con el rating actualizado
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'Hubo un error al actualizar el rating del usuario' })
+    }
 })
 
 export default app
