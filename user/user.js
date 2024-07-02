@@ -26,22 +26,18 @@ app.get('/user', async (req, res) => {
     }
 })
 
-app.get('/user/:id', async (req, res) => {
+app.get('/user/:name', async (req, res) => {
     try {
-        const { id } = req.params // Usamos req.params para obtener el nombre del parámetro de ruta
+        const { name } = req.params // Usamos req.params para obtener el nombre del parámetro de ruta
 
         const user = await User.findOne({
             where: {
-                name: { [Op.iLike]: `%${id}%` } // Busca por nombre ignorando mayúsculas/minúsculas
+                name: { [Op.iLike]: `%${name}%` }, // Busca por nombre ignorando mayúsculas/minúsculas
             },
         }) //Obtenemos del usuario en la base de datos, utilizando método de sequelize
 
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' })
-        }
-
-        if (user.status === 'INACTIVE') {
-            return res.status(200).json({ status: "INACTIVE", message: `Usuario ${id} está inactivo` })
         }
 
         res.json(user)
@@ -52,7 +48,7 @@ app.get('/user/:id', async (req, res) => {
 })
 
 app.post('/user', async (req, res) => {
-    const { name, cell_number, is_archer, rating } = req.body
+    const { name, cell_number, is_archer, rating, positions, goals, attendance } = req.body
 
     const totalCount = await User.count()
     if(totalCount >= 14) {
@@ -67,7 +63,7 @@ app.post('/user', async (req, res) => {
     }
 
     try {
-        const newUser = await User.create({ name, cell_number, is_archer, rating })
+        const newUser = await User.create({ name, cell_number, is_archer, rating, positions, goals, attendance })
         res.status(201).json({ status: 'Guardado con Éxito', user: newUser })
     } catch (error) {
         console.error(error)
@@ -77,7 +73,7 @@ app.post('/user', async (req, res) => {
 
 app.put('/user/:id', async (req, res) => {
     const { id } = req.params
-    const { name, cell_number, is_archer, rating } = req.body
+    const { name, cell_number, is_archer, rating, positions, goals, attendance } = req.body
 
     const currentUser = await User.findByPk(id)
 
@@ -88,7 +84,7 @@ app.put('/user/:id', async (req, res) => {
         }
     }
 
-    await User.update({ name, cell_number, is_archer, rating }, {
+    await User.update({ name, cell_number, is_archer, rating, positions, goals, attendance }, {
         where: { id }
     })
 
@@ -104,7 +100,7 @@ app.delete('/user/:id', async (req, res) => {
         individualHooks: true// Asegura que los ganchos de Sequelize se ejecuten correctamente
     })
 
-    res.send({ status: "success"})
+    res.send({ status: "Éxito al eliminar jugador"})
 })
 
 // Ruta para actualizar la calificación de un jugador por su ID
@@ -134,5 +130,58 @@ app.put('/user/:id/rating', async (req, res) => {
         res.status(500).json({ message: 'Hubo un error al actualizar el rating del usuario' })
     }
 })
+
+// Ruta para actualizar los goles de un jugador por su ID
+app.put('/user/:id/goals', async (req, res) => {
+    try {
+        const { id } = req.params
+        const { goals } = req.body
+
+        const updatedUser = await User.update(
+            { goals },
+            {
+                where: { id },
+                returning: true,
+                plain: true,
+            }
+        )
+
+        if (!updatedUser[1]) {
+            return res.status(404).json({ message: 'Usuario no encontrado' })
+        }
+
+        res.json(updatedUser[1])
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Hubo un error al actualizar los goles del usuario' })
+    }
+})
+
+// Ruta para actualizar las asistencias de un jugador por su ID
+app.put('/user/:id/attendance', async (req, res) => {
+    try {
+        const { id } = req.params
+        const { attendance } = req.body
+
+        const updatedUser = await User.update(
+            { attendance },
+            {
+                where: { id },
+                returning: true,
+                plain: true,
+            }
+        )
+
+        if (!updatedUser[1]) {
+            return res.status(404).json({ message: 'Usuario no encontrado' })
+        }
+
+        res.json(updatedUser[1])
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'Hubo un error al actualizar la asistencia del usuario' })
+    }
+})
+
 
 export default app
