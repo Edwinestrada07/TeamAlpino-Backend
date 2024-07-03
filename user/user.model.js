@@ -32,8 +32,8 @@ User.init(
             defaultValue: 0,
         },
         attendance: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
         },
     },
     {

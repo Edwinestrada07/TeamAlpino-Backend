@@ -183,5 +183,4 @@ app.put('/user/:id/attendance', async (req, res) => {
     }
 })
 
-
 export default app
