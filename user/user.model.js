@@ -26,6 +26,8 @@ User.init(
         },
         positions: {
             type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'Unknown'
         },
         goals: {
             type: DataTypes.INTEGER,
