@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js"
-}
-,
+  },
   "author": "Edwin_Estrada",
   "license": "ISC",
   "dependencies": {
