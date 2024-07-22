@@ -1,8 +1,9 @@
 import Sequelize from 'sequelize'
 
-//driver://user:password@host:port/database
-const sequelize = new Sequelize('postgres://postgres:12345@localhost:5432/TeamAlpino') //Conexión a la base de datos por medio de sequelize
+// Usa la URL de conexión proporcionada por Supabase
+const sequelize = new Sequelize('postgres://postgres.sykdchrxmrtzehhuooeb:12345@aws-0-us-west-1.pooler.supabase.com:6543/postgres');
 
+// Conexión a la base de datos por medio de Sequelize
 sequelize
   .authenticate()
   .then(() => {
@@ -10,6 +11,6 @@ sequelize
   })
   .catch((error) => {
     console.error('Error al conectar a la base de datos:', error)
-})
+  })
 
 export default sequelize
