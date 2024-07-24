@@ -1,14 +1,14 @@
 import Sequelize from 'sequelize'
 
 // Usa la URL de conexión proporcionada por Supabase desde las variables de entorno
-const sequelize = new Sequelize('postgres://postgres.sykdchrxmrtzehhuooeb:QuierolaMT09@aws-0-us-west-1.pooler.supabase.com:6543/postgres', {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     dialectOptions: {
-    ssl: {
-        require: true,
-        rejectUnauthorized: false
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
     }
-  }
 })
 
 // Conexión a la base de datos por medio de Sequelize
@@ -22,4 +22,5 @@ sequelize
     })
 
 export default sequelize
+
 
