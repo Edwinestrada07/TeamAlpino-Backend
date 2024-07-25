@@ -15,11 +15,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(UserRouter)
 
 // Servir archivos estáticos desde la carpeta 'dist'
-app.use(express.static(path.join(__dirname, 'dist')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+app.use(express.static('dist'))
 
 // Ruta para verificar el funcionamiento del servidor
 app.get('/', (req, res) => {
